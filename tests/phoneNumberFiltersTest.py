@@ -1,6 +1,6 @@
 import unittest
 from src.extractors.phone.phoneNumberExtractor import NumberExtractor, filter_on_number_is_date, \
-    filter_on_number_contains_only_one_parenthesis_pair, filter_on_minus_only_between_two_numbers, \
+    filter_on_number_contains_maximum_one_parenthesis_pair, filter_on_minus_only_between_two_numbers, \
     filter_on_slashes_only_between_two_numbers, create_filter_on_minimum_number_of_digits, filter_on_candidate_shouldnt_contain_only_numbers
 from random import shuffle
 
@@ -171,7 +171,7 @@ class filter_on_number_contains_only_one_parenthesis_pair_test(unittest.TestCase
 
     def test_no_brackets(self):
         candidates = ["+385 101 101", "385 101 101", "+385-101-101"]
-        filtered_candidates = filter_on_number_contains_only_one_parenthesis_pair(candidates)
+        filtered_candidates = filter_on_number_contains_maximum_one_parenthesis_pair(candidates)
 
         self.assertEqual(candidates[0], filtered_candidates[0])
         self.assertEqual(candidates[1], filtered_candidates[1])
@@ -179,7 +179,7 @@ class filter_on_number_contains_only_one_parenthesis_pair_test(unittest.TestCase
 
     def test_valid_brackets(self):
         candidates = ["(+385) 101 101", "(385) 101 101", "+385(101)101", "+385 (101) 101"]
-        filtered_candidates = filter_on_number_contains_only_one_parenthesis_pair(candidates)
+        filtered_candidates = filter_on_number_contains_maximum_one_parenthesis_pair(candidates)
 
         self.assertEqual(candidates[0], filtered_candidates[0])
         self.assertEqual(candidates[1], filtered_candidates[1])
@@ -188,19 +188,19 @@ class filter_on_number_contains_only_one_parenthesis_pair_test(unittest.TestCase
 
     def test_invalid_multiple_brackets(self):
         candidates = ["(+385) (101) 101", "(385)() 101 101", "+385(101)(1)01", "+3(85) (101) 101"]
-        filtered_candidates = filter_on_number_contains_only_one_parenthesis_pair(candidates)
+        filtered_candidates = filter_on_number_contains_maximum_one_parenthesis_pair(candidates)
 
         self.assertEqual(len(filtered_candidates), 0)
 
     def test_invalid_only_opening_bracket(self):
         candidates = ["(+385 101 101", "(385 ( 101 101", "+385 (101 1 01", "+3 85 101 10(1"]
-        filtered_candidates = filter_on_number_contains_only_one_parenthesis_pair(candidates)
+        filtered_candidates = filter_on_number_contains_maximum_one_parenthesis_pair(candidates)
 
         self.assertEqual(len(filtered_candidates), 0)
 
     def test_invalid_only_closing_bracket(self):
         candidates = [")+385 101 101", ")385 ) 101 101", "+385 )101 1 01", "+3 85 101 10(1"]
-        filtered_candidates = filter_on_number_contains_only_one_parenthesis_pair(candidates)
+        filtered_candidates = filter_on_number_contains_maximum_one_parenthesis_pair(candidates)
 
         self.assertEqual(len(filtered_candidates), 0)
 
@@ -210,7 +210,7 @@ class filter_on_number_contains_only_one_parenthesis_pair_test(unittest.TestCase
 
         joined = valid_candidates + invalid_candidates
         shuffle(joined)
-        filtered_candidates = filter_on_number_contains_only_one_parenthesis_pair(joined)
+        filtered_candidates = filter_on_number_contains_maximum_one_parenthesis_pair(joined)
 
         self.assertEqual(len(filtered_candidates), 4)
         self.assertTrue(valid_candidates[0] in filtered_candidates)
