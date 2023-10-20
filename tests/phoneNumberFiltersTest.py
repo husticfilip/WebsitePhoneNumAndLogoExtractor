@@ -93,17 +93,78 @@ class Basefilter_on_number_prefix_and_sufix_test(unittest.TestCase):
 
 class filter_on_number_is_date_test(unittest.TestCase):
 
-    def test_possible_date_formats_1(self):
-        candidates = ["2023-10-10", "2023 10 10", "2023 14", "2023-14", "14"]
+    def test_possible_date_formats_with_spaces(self):
+        candidates = ["2023 10 10", "10 10 2023", "2023 14", "14 2023"]
         filtered_candidates = filter_on_number_is_date(candidates)
 
         self.assertEqual(len(filtered_candidates), 0)
 
-    # def test_possible_date_formats_but_not_date(self):
-    #    candidates = ["2023-32-10", "14-10-2023", "2023 10", "10 2023"]
-    #    filtered_candidates = filter_on_number_is_date(candidates)
+    def test_possible_date_formats_with_minuses(self):
+        candidates = ["2023-10-10", "10-10-2023", "2023-14", "14-2023"]
+        filtered_candidates = filter_on_number_is_date(candidates)
 
-    #    self.assertEqual(len(filtered_candidates), 0)
+        self.assertEqual(len(filtered_candidates), 0)
+
+    def test_possible_date_formats_with_slashes(self):
+        candidates = ["2023\\10\\10", "10\\10\\2023", "2023\\14", "14\\2023"]
+        filtered_candidates = filter_on_number_is_date(candidates)
+
+        self.assertEqual(len(filtered_candidates), 0)
+
+    def test_possible_date_formats_with_BACKslashes(self):
+        candidates = ["2023/10/10", "10/10/2023", "2023/14", "14/2023"]
+        filtered_candidates = filter_on_number_is_date(candidates)
+
+        self.assertEqual(len(filtered_candidates), 0)
+
+    def test_valid_numbers(self):
+        candidates = ["+385 101 101", "(+385) 101 101", "(+385) 101-101", "385 101 101"]
+        filtered_candidates = filter_on_number_is_date(candidates)
+
+        self.assertEqual(candidates[0], filtered_candidates[0])
+        self.assertEqual(candidates[1], filtered_candidates[1])
+        self.assertEqual(candidates[2], filtered_candidates[2])
+        self.assertEqual(candidates[3], filtered_candidates[3])
+
+    def test_valid_numbers_using_date_separatoes(self):
+        candidates = ["+385-101-101", "(+385) 101-101", "385\\101\\101", "385/101/101"]
+        filtered_candidates = filter_on_number_is_date(candidates)
+
+        self.assertEqual(candidates[0], filtered_candidates[0])
+        self.assertEqual(candidates[1], filtered_candidates[1])
+        self.assertEqual(candidates[2], filtered_candidates[2])
+        self.assertEqual(candidates[3], filtered_candidates[3])
+
+    def test_valid_numbers_using_date_separatoes_2(self):
+        candidates = ["+1-866-868-3678", "+1/866/868/3678", "+1\\866\\868\\3678", "+1 866 868 3678"]
+        filtered_candidates = filter_on_number_is_date(candidates)
+
+        self.assertEqual(candidates[0], filtered_candidates[0])
+        self.assertEqual(candidates[1], filtered_candidates[1])
+        self.assertEqual(candidates[2], filtered_candidates[2])
+        self.assertEqual(candidates[3], filtered_candidates[3])
+
+        candidates = ["1-3678-3678", "1/3678/3678", "1\\3678\\3678", "1 3678 3678"]
+        filtered_candidates = filter_on_number_is_date(candidates)
+
+        self.assertEqual(candidates[0], filtered_candidates[0])
+        self.assertEqual(candidates[1], filtered_candidates[1])
+        self.assertEqual(candidates[2], filtered_candidates[2])
+        self.assertEqual(candidates[3], filtered_candidates[3])
+
+    def test_valid_invalid_mix(self):
+        valid_candidates = ["+385-101-101", "(+385) 101-101", "385\\101\\101", "385/101/101"]
+        invalid_candidates = ["2023/10/10", "2023-10-10", "2023 10 10", "2023/10", "2023-10", "2023 10"]
+
+        joined = valid_candidates + invalid_candidates
+        shuffle(joined)
+        filtered_candidates = filter_on_number_is_date(joined)
+
+        self.assertEqual(len(valid_candidates), len(filtered_candidates))
+        self.assertTrue(valid_candidates[0] in filtered_candidates)
+        self.assertTrue(valid_candidates[1] in filtered_candidates)
+        self.assertTrue(valid_candidates[2] in filtered_candidates)
+        self.assertTrue(valid_candidates[3] in filtered_candidates)
 
 
 class filter_on_number_contains_only_one_parenthesis_pair_test(unittest.TestCase):

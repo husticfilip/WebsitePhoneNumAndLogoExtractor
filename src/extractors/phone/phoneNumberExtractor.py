@@ -2,12 +2,15 @@ from typing import List, Tuple
 import re
 from enum import Enum
 
-POSSIBLE_DATE_FORMAT_REGEXS = ['\d\d\d\d-\d\d-\d\d',
-                               '\d\d\d\d \d\d \d\d',
-                               '\d\d\d\d-\d\d',
-                               '\d\d\d\d \d\d',
-                               '\d\d-\d\d\d\d',
-                               '\d\d \d\d\d\d']
+POSSIBLE_DATE_FORMAT_REGEXS = [r'^\d\d\d\d(-\d\d){1,2}$',
+                               r'^\d\d\d\d( \d\d){1,2}$',
+                               r'^\d\d\d\d(\\\d\d){1,2}$',
+                               r'^\d\d\d\d(/\d\d){1,2}$',
+
+                               r'^(\d\d-){1,2}\d\d\d\d$',
+                               r'^(\d\d ){1,2}\d\d\d\d$',
+                               r'^(\d\d\\){1,2}\d\d\d\d$',
+                               r'^(\d\d/){1,2}\d\d\d\d$']
 
 
 # TODO -testiaj  jos
@@ -15,16 +18,16 @@ POSSIBLE_DATE_FORMAT_REGEXS = ['\d\d\d\d-\d\d-\d\d',
 def filter_on_number_is_date(phone_number_candidates: List[str]) -> List[str]:
     passed_candidates = []
     for candidate in phone_number_candidates:
+        valid = True
         for regex in POSSIBLE_DATE_FORMAT_REGEXS:
+            # if date is found
             if re.search(regex, candidate):
+                valid = False
                 break
-        passed_candidates.append(candidate)
+        if valid:
+            passed_candidates.append(candidate)
 
     return passed_candidates
-
-
-def find_occurrences(string, match_char):
-    return [index for index, char in enumerate(string) if char == match_char]
 
 
 def filter_on_number_contains_only_one_parenthesis_pair(phone_number_candidates: List[str]) -> List[str]:
@@ -82,12 +85,18 @@ def create_filter_on_minimum_number_of_digits(minimum_number_of_digits):
     return filter_on_minimum_number_of_digits
 
 
+def find_occurrences(string, match_char):
+    return [index for index, char in enumerate(string) if char == match_char]
+
 
 
 class FilterEnum(Enum):
     NUMER_IS_DATE = 1
-    NUMBER_CONTAINS_ONLY_ONE_PARANTHASIS_PAID = 2
+    NUMBER_CONTAINS_ONLY_ONE_PARANTHASIS_PAIR = 2
     MINUS_ONLY_BETWEEN_TWO_NUMBERS = 3
+    SLASHES_AND_BACKSLASHES_ONLY_BETWEEN_TWO_NUMBERS = 4
+    MINIMUM_NUMBER_OF_DIGITS = 5
+
 
 
 class NumberExtractor():
@@ -102,16 +111,21 @@ class NumberExtractor():
     NUMBER_LENGTH = '{4,17}'
     NUMBER_MATCHING_REGEX = fr'([^+(\d]{PREFIX_LENGTH}(\+\+)?)([+(\d]([\d\(\)\-\s\\/](?!\s\s)){NUMBER_LENGTH}\d)(?=[^\d]|$)(.?.?)'
 
+    MINIMUM_NUMBER_OF_DIGITS = 6
     def __init__(self):
         self.filters = []
 
     def add_filter(self, filter_enum: FilterEnum):
         if filter_enum == FilterEnum.NUMER_IS_DATE:
             self.filters.append(filter_on_number_is_date)
-        if filter_enum == FilterEnum.NUMBER_CONTAINS_ONLY_ONE_PARANTHASIS_PAID:
+        if filter_enum == FilterEnum.NUMBER_CONTAINS_ONLY_ONE_PARANTHASIS_PAIR:
             self.filters.append(filter_on_number_contains_only_one_parenthesis_pair)
         if filter_enum == FilterEnum.MINUS_ONLY_BETWEEN_TWO_NUMBERS:
             self.filters.append(filter_on_minus_only_between_two_numbers)
+        if filter_enum == FilterEnum.SLASHES_AND_BACKSLASHES_ONLY_BETWEEN_TWO_NUMBERS:
+            self.filters.append(filter_on_slashes_only_between_two_numbers)
+        if filter_enum == FilterEnum.NUMER_IS_DATE:
+            self.filters.append(create_filter_on_minimum_number_of_digits(minimum_number_of_digits=self.MINIMUM_NUMBER_OF_DIGITS))
 
     def reset_filters(self):
         self.filters = []
@@ -121,10 +135,11 @@ class NumberExtractor():
         certain = self.get_certain_phone_numbers(candidates_tuple_groups)
         candidates_list = self.basefilter_on_number_prefix_and_sufix(candidates_tuple_groups)
 
-        for filter in self.filters:
-            candidates_list = filter(candidates_list)
+        # TODO - log filters being used
+        for filter_apply in self.filters:
+            candidates_list = filter_apply(candidates_list)
 
-            return certain + candidates_list
+        return certain + candidates_list
 
     def extract_candidate_list(self, text: str) -> List[Tuple[str, str, str]]:
         intermediate_result_set = re.findall(self.NUMBER_MATCHING_REGEX, text)

@@ -32,9 +32,11 @@ if __name__ == '__main__':
     url = "https://www.fer.unizg.hr/"
 
     numberExtractor = NumberExtractor()
-    numberExtractor.add_filter(FilterEnum.MINUS_ONLY_BETWEEN_TWO_NUMBERS)
-    numberExtractor.add_filter(FilterEnum.NUMBER_CONTAINS_ONLY_ONE_PARANTHASIS_PAID)
+    numberExtractor.add_filter(FilterEnum.MINIMUM_NUMBER_OF_DIGITS)
     numberExtractor.add_filter(FilterEnum.NUMER_IS_DATE)
+    numberExtractor.add_filter(FilterEnum.MINUS_ONLY_BETWEEN_TWO_NUMBERS)
+    numberExtractor.add_filter(FilterEnum.SLASHES_AND_BACKSLASHES_ONLY_BETWEEN_TWO_NUMBERS)
+    numberExtractor.add_filter(FilterEnum.NUMBER_CONTAINS_ONLY_ONE_PARANTHASIS_PAIR)
 
     logoExtractor = LogoExtractor()
 
