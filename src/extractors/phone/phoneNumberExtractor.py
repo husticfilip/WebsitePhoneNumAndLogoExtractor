@@ -36,7 +36,7 @@ def filter_on_number_contains_only_one_parenthesis_pair(phone_number_candidates:
         # if there is no parenthesis then candidate passes filter
         if len(open_parenthesis_positions) == 0 and len(close_parenthesis_positions) == 0:
             passed_candidates.append(candidate)
-        # if there has one open and one closed parenthesis and position of open one is before closed one then
+        # if number has one open and one closed parenthesis and position of open one is before closed one then
         # candidate passes filter
         elif len(open_parenthesis_positions) == 1 and len(close_parenthesis_positions) == 1 and \
                 open_parenthesis_positions[0] < close_parenthesis_positions[0]:
@@ -71,8 +71,17 @@ def filter_on_char_only_between_two_numbers(phone_number_candidates: List[str], 
     return passed_candidates
 
 
-def filter_on_number_length(phone_number_candidates: List[str]) -> List[str]:
-    pass
+def create_filter_on_minimum_number_of_digits(minimum_number_of_digits):
+    def filter_on_minimum_number_of_digits(phone_number_candidates: List[str]) -> List[str]:
+        passed_candidates = []
+        for candidate in phone_number_candidates:
+            if sum(c.isdigit() for c in candidate) >= minimum_number_of_digits:
+                passed_candidates.append(candidate)
+        return passed_candidates
+
+    return filter_on_minimum_number_of_digits
+
+
 
 
 class FilterEnum(Enum):
