@@ -1,6 +1,7 @@
 import re
 from enum import Enum
 from typing import List, Tuple
+import logging
 
 from src.extractors.beautifulSoupWrapper import BeautifulSoupHtmlWrapper
 
@@ -174,7 +175,7 @@ class FilterEnum(Enum):
     NUMBER_SHOULD_CONTAIN_ONLY_NUMBERS = 6
 
 
-class NumberExtractor():
+class PhoneNumberExtractor():
     # TODO - za kraj komentiraj kako radi extractor
     """
     Class represents phone number extractor. It gets initialized with BeautifulSoupHtmlWrapper
@@ -248,17 +249,23 @@ class NumberExtractor():
         Entry point of phone number extraction.
         :return: list of extracted phone numbers.
         """
+        logging.info("Starting number extractor")
         # Get cleaned html text without html tags
         text = self.soup_wrapper.get_text_no_html_tags()
-
         candidates_tuple_groups = self.extract_candidate_list(text)
+
+        logging.info("Getting certain phone numbers list")
         certain = self.get_certain_phone_numbers(candidates_tuple_groups)
+
+        logging.info("Applying base filter:" + str(self.basefilter_on_number_prefix_and_sufix))
         candidates_list = self.basefilter_on_number_prefix_and_sufix(candidates_tuple_groups)
 
         # TODO - log filters being used
         for filter_apply in self.filters:
+            logging.info("Applying filter: " + str(filter_apply))
             candidates_list = filter_apply(candidates_list)
 
+        logging.info("Returning phone numbers")
         return certain + candidates_list
 
     def extract_candidate_list(self, text: str) -> List[Tuple[str, str, str]]:

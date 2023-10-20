@@ -1,12 +1,12 @@
 import unittest
 
-from src.extractors.phone.phoneNumberExtractor import NumberExtractor
+from src.extractors.phone.phoneNumberExtractor import PhoneNumberExtractor
 
 
 class Extract_candidate_list_test(unittest.TestCase):
 
     def setUp(self):
-        self.numberExtractor = NumberExtractor()
+        self.numberExtractor = PhoneNumberExtractor()
 
     def compareTuples(self, tup1, tup2):
         for e1, e2 in zip(tup1, tup2):
@@ -305,7 +305,7 @@ class Extract_candidate_list_test(unittest.TestCase):
 class Get_certain_phone_numbers_test(unittest.TestCase):
 
     def setUp(self):
-        self.numberExtractor = NumberExtractor()
+        self.numberExtractor = PhoneNumberExtractor()
 
     def test_tel_tag(self):
         candidate_list = [("tel:", "+99 123 4565 ", ""), ("tel:", "+99 123 4565", ""), ("tel:", "99 123 4565", ""), ("tel: ","99 123 4565",""), ("tel: ","+99 123 4565","")]
