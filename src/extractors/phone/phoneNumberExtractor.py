@@ -84,7 +84,7 @@ def create_filter_on_minimum_number_of_digits(minimum_number_of_digits):
     return filter_on_minimum_number_of_digits
 
 
-def filter_on_candidate_contains_only_numbers(phone_number_candidates: List[str]) -> List[str]:
+def filter_on_candidate_shouldnt_contain_only_numbers(phone_number_candidates: List[str]) -> List[str]:
     passed_candidates = []
     for candidate in phone_number_candidates:
         if not candidate.isnumeric():
@@ -103,6 +103,7 @@ class FilterEnum(Enum):
     MINUS_ONLY_BETWEEN_TWO_NUMBERS = 3
     SLASHES_AND_BACKSLASHES_ONLY_BETWEEN_TWO_NUMBERS = 4
     MINIMUM_NUMBER_OF_DIGITS = 5
+    NUMBER_SHOULD_CONTAIN_ONLY_NUMBERS = 6
 
 
 
@@ -122,6 +123,7 @@ class NumberExtractor():
     def __init__(self):
         self.filters = []
 
+    # TODO-provijeri jos jednom je li dobto pridruzeno sve u filters
     def add_filter(self, filter_enum: FilterEnum):
         if filter_enum == FilterEnum.NUMER_IS_DATE:
             self.filters.append(filter_on_number_is_date)
@@ -131,8 +133,10 @@ class NumberExtractor():
             self.filters.append(filter_on_minus_only_between_two_numbers)
         if filter_enum == FilterEnum.SLASHES_AND_BACKSLASHES_ONLY_BETWEEN_TWO_NUMBERS:
             self.filters.append(filter_on_slashes_only_between_two_numbers)
-        if filter_enum == FilterEnum.NUMER_IS_DATE:
+        if filter_enum == FilterEnum.MINIMUM_NUMBER_OF_DIGITS:
             self.filters.append(create_filter_on_minimum_number_of_digits(minimum_number_of_digits=self.MINIMUM_NUMBER_OF_DIGITS))
+        if filter_enum == FilterEnum.NUMBER_SHOULD_CONTAIN_ONLY_NUMBERS:
+            self.filters.append(filter_on_candidate_shouldnt_contain_only_numbers)
 
     def reset_filters(self):
         self.filters = []

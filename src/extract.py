@@ -33,6 +33,7 @@ if __name__ == '__main__':
 
     numberExtractor = NumberExtractor()
     numberExtractor.add_filter(FilterEnum.MINIMUM_NUMBER_OF_DIGITS)
+    numberExtractor.add_filter(FilterEnum.NUMBER_SHOULD_CONTAIN_ONLY_NUMBERS)
     numberExtractor.add_filter(FilterEnum.NUMER_IS_DATE)
     numberExtractor.add_filter(FilterEnum.MINUS_ONLY_BETWEEN_TWO_NUMBERS)
     numberExtractor.add_filter(FilterEnum.SLASHES_AND_BACKSLASHES_ONLY_BETWEEN_TWO_NUMBERS)

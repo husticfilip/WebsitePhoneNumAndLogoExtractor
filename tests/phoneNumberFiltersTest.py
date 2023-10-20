@@ -1,7 +1,7 @@
 import unittest
 from src.extractors.phone.phoneNumberExtractor import NumberExtractor, filter_on_number_is_date, \
     filter_on_number_contains_only_one_parenthesis_pair, filter_on_minus_only_between_two_numbers, \
-    filter_on_slashes_only_between_two_numbers, create_filter_on_minimum_number_of_digits, filter_on_candidate_contains_only_numbers
+    filter_on_slashes_only_between_two_numbers, create_filter_on_minimum_number_of_digits, filter_on_candidate_shouldnt_contain_only_numbers
 from random import shuffle
 
 
@@ -353,19 +353,19 @@ class Test_filter_on_candidate_contains_only_numbers(unittest.TestCase):
 
     def test_only_numbers(self):
         candidates = ["12345", "99696444","1234567810","101010"]
-        filtered_candidates = filter_on_candidate_contains_only_numbers(candidates)
+        filtered_candidates = filter_on_candidate_shouldnt_contain_only_numbers(candidates)
 
         self.assertEqual(len(filtered_candidates), 0)
 
     def test_number_and_plus(self):
         candidates = ["+99696444"]
-        filtered_candidates = filter_on_candidate_contains_only_numbers(candidates)
+        filtered_candidates = filter_on_candidate_shouldnt_contain_only_numbers(candidates)
 
         self.assertEqual(candidates[0], filtered_candidates[0])
 
     def test_number_separators(self):
         candidates = ["+99-696-444", "99\\12\\12", "99 12 12", "(55)1212"]
-        filtered_candidates = filter_on_candidate_contains_only_numbers(candidates)
+        filtered_candidates = filter_on_candidate_shouldnt_contain_only_numbers(candidates)
 
         self.assertEqual(len(candidates), len(filtered_candidates))
         self.assertEqual(candidates[0], filtered_candidates[0])
