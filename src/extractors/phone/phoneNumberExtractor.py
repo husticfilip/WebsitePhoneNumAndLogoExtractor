@@ -73,7 +73,6 @@ def filter_on_char_only_between_two_numbers(phone_number_candidates: List[str], 
 
     return passed_candidates
 
-
 def create_filter_on_minimum_number_of_digits(minimum_number_of_digits):
     def filter_on_minimum_number_of_digits(phone_number_candidates: List[str]) -> List[str]:
         passed_candidates = []
@@ -83,6 +82,14 @@ def create_filter_on_minimum_number_of_digits(minimum_number_of_digits):
         return passed_candidates
 
     return filter_on_minimum_number_of_digits
+
+
+def filter_on_candidate_contains_only_numbers(phone_number_candidates: List[str]) -> List[str]:
+    passed_candidates = []
+    for candidate in phone_number_candidates:
+        if not candidate.isnumeric():
+            passed_candidates.append(candidate)
+    return passed_candidates
 
 
 def find_occurrences(string, match_char):
