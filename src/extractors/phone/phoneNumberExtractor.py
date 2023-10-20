@@ -1,6 +1,8 @@
-from typing import List, Tuple
 import re
 from enum import Enum
+from typing import List, Tuple
+
+from src.extractors.beautifulSoupWrapper import BeautifulSoupHtmlWrapper
 
 POSSIBLE_DATE_FORMAT_REGEXS = [r'^\d\d\d\d(-\d\d){1,2}$',
                                r'^\d\d\d\d( \d\d){1,2}$',
@@ -52,7 +54,6 @@ def filter_on_minus_only_between_two_numbers(phone_number_candidates: List[str])
     return filter_on_char_only_between_two_numbers(phone_number_candidates, "-")
 
 
-# Pripazi na "\\" i '\'
 def filter_on_slashes_only_between_two_numbers(phone_number_candidates: List[str]) -> List[str]:
     passed = filter_on_char_only_between_two_numbers(phone_number_candidates, "\\")
     return filter_on_char_only_between_two_numbers(passed, "/")
@@ -72,6 +73,7 @@ def filter_on_char_only_between_two_numbers(phone_number_candidates: List[str], 
                 passed_candidates.append(candidate)
 
     return passed_candidates
+
 
 def create_filter_on_minimum_number_of_digits(minimum_number_of_digits):
     def filter_on_minimum_number_of_digits(phone_number_candidates: List[str]) -> List[str]:
@@ -96,7 +98,6 @@ def find_occurrences(string, match_char):
     return [index for index, char in enumerate(string) if char == match_char]
 
 
-
 class FilterEnum(Enum):
     NUMER_IS_DATE = 1
     NUMBER_CONTAINS_ONLY_ONE_PARANTHASIS_PAIR = 2
@@ -104,7 +105,6 @@ class FilterEnum(Enum):
     SLASHES_AND_BACKSLASHES_ONLY_BETWEEN_TWO_NUMBERS = 4
     MINIMUM_NUMBER_OF_DIGITS = 5
     NUMBER_SHOULD_CONTAIN_ONLY_NUMBERS = 6
-
 
 
 class NumberExtractor():
@@ -120,8 +120,10 @@ class NumberExtractor():
     NUMBER_MATCHING_REGEX = fr'([^+(\d]{PREFIX_LENGTH}(\+\+)?)([+(\d]([\d\(\)\-\s\\/](?!\s\s)){NUMBER_LENGTH}\d)(?=[^\d]|$)(.?.?)'
 
     MINIMUM_NUMBER_OF_DIGITS = 6
-    def __init__(self):
+
+    def __init__(self, soup_wrapper: BeautifulSoupHtmlWrapper):
         self.filters = []
+        self.soup_wrapper = soup_wrapper
 
     # TODO-provijeri jos jednom je li dobto pridruzeno sve u filters
     def add_filter(self, filter_enum: FilterEnum):
@@ -134,14 +136,17 @@ class NumberExtractor():
         if filter_enum == FilterEnum.SLASHES_AND_BACKSLASHES_ONLY_BETWEEN_TWO_NUMBERS:
             self.filters.append(filter_on_slashes_only_between_two_numbers)
         if filter_enum == FilterEnum.MINIMUM_NUMBER_OF_DIGITS:
-            self.filters.append(create_filter_on_minimum_number_of_digits(minimum_number_of_digits=self.MINIMUM_NUMBER_OF_DIGITS))
+            self.filters.append(
+                create_filter_on_minimum_number_of_digits(minimum_number_of_digits=self.MINIMUM_NUMBER_OF_DIGITS))
         if filter_enum == FilterEnum.NUMBER_SHOULD_CONTAIN_ONLY_NUMBERS:
             self.filters.append(filter_on_candidate_shouldnt_contain_only_numbers)
 
     def reset_filters(self):
         self.filters = []
 
-    def extractNumbers(self, text) -> List[str]:
+    def extractNumbers(self) -> List[str]:
+        text = self.soup_wrapper.get_text_no_html_tags()
+
         candidates_tuple_groups = self.extract_candidate_list(text)
         certain = self.get_certain_phone_numbers(candidates_tuple_groups)
         candidates_list = self.basefilter_on_number_prefix_and_sufix(candidates_tuple_groups)
