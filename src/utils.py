@@ -9,7 +9,6 @@ headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Geck
            'Referer': 'https://www.google.com/'}
 
 
-# TODO - make checks if request passed, check if url is valid
 def open_html(url: str):
     response = requests.get(url, headers=headers)
     return response.text, response.status_code

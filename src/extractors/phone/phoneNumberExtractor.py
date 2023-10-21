@@ -219,7 +219,7 @@ class PhoneNumberExtractor():
         self.filters = []
         self.soup_wrapper = soup_wrapper
 
-    # TODO-provijeri jos jednom je li dobto pridruzeno sve u filters
+
     def add_filter(self, filter_enum: FilterEnum):
         """
         Function registers phone number filter that will be used to filter out
@@ -260,7 +260,6 @@ class PhoneNumberExtractor():
         logging.info("Applying base filter:" + str(self.basefilter_on_number_prefix_and_sufix))
         candidates_list = self.basefilter_on_number_prefix_and_sufix(candidates_tuple_groups)
 
-        # TODO - log filters being used
         for filter_apply in self.filters:
             logging.info("Applying filter: " + str(filter_apply))
             candidates_list = filter_apply(candidates_list)
