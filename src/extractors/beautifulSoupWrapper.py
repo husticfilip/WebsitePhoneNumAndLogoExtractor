@@ -10,13 +10,9 @@ class BeautifulSoupHtmlWrapper():
     """
 
     def __init__(self, html: str):
-        logging.info("Initializing BeautifulSoupHtmlWrapper and parsing html with BeautifulSoup html.parser")
-        try:
-            self.soup_html_parsed: BeautifulSoup = BeautifulSoup(html, 'html.parser')
-        except Exception as ex:
-            logging.error("Provided html can not be parsed")
-            logging.error(ex, exc_info=True)
-            raise ValueError("Provided html can not be parsed")
+        if not isinstance(html, str):
+            raise ValueError("Passed html is not of type str")
+        self.soup_html_parsed: BeautifulSoup = BeautifulSoup(html, 'html.parser')
 
     def get_text_no_html_tags(self):
         """
@@ -48,19 +44,22 @@ class ImageElementStringWrapper():
     """
 
     def __init__(self, image: Tag):
+        if not isinstance(Tag, str):
+            raise ValueError("Provided image is not of BeautifulSoup Tag type.")
+
         self.image = image
         """
         Child text is text inside <src> tag
         """
-        self.child = str(image['src']).lower() if image.has_attr('src') else ""
+        self.child = str(image['src']) if image.has_attr('src') else ""
         """
         Current text is text inside  <img> tag
         """
-        self.current = str(image).lower()
+        self.current = str(image)
         """
         Parent text is text inside image parent <div> tag
         """
-        self.parent = str(image.parent).lower()
+        self.parent = str(image.parent)
         """
         Is image in the footer
         """
