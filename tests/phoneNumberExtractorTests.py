@@ -1,12 +1,13 @@
 import unittest
 
 from src.extractors.phone.phoneNumberExtractor import PhoneNumberExtractor
+from src.extractors.beautifulSoupWrapper import BeautifulSoupHtmlWrapper
 
 
 class Extract_candidate_list_test(unittest.TestCase):
 
     def setUp(self):
-        self.numberExtractor = PhoneNumberExtractor()
+        self.numberExtractor = PhoneNumberExtractor(BeautifulSoupHtmlWrapper(""))
 
     def compareTuples(self, tup1, tup2):
         for e1, e2 in zip(tup1, tup2):
@@ -305,10 +306,10 @@ class Extract_candidate_list_test(unittest.TestCase):
 class Get_certain_phone_numbers_test(unittest.TestCase):
 
     def setUp(self):
-        self.numberExtractor = PhoneNumberExtractor()
+        self.numberExtractor = PhoneNumberExtractor(BeautifulSoupHtmlWrapper(""))
 
     def test_tel_tag(self):
-        candidate_list = [("tel:", "+99 123 4565 ", ""), ("tel:", "+99 123 4565", ""), ("tel:", "99 123 4565", ""), ("tel: ","99 123 4565",""), ("tel: ","+99 123 4565","")]
+        candidate_list = [("tel:", "+99 123 4565 ", ""), ("telephone ", "+99 123 4565", ""), ("TEL:    ", "99 123 4565", ""), ("mentioning telephone ","99 123 4565",""), ("TeL: ","+99 123 4565","")]
         filtered_list = self.numberExtractor.get_certain_phone_numbers(candidate_list)
 
         self.assertEqual(len(filtered_list), len(candidate_list))
@@ -318,43 +319,33 @@ class Get_certain_phone_numbers_test(unittest.TestCase):
         self.assertTrue(candidate_list[3][1] in filtered_list)
         self.assertTrue(candidate_list[4][1] in filtered_list)
 
-        text = " \"tel:+99 123 4565  \n  tel: +99 123 4565   tel:99 123 4565  \n  \"tel: 99 123 4565, 'tel: 99 123 4565  'tel: +99 123 4565 "
-        result_list = self.numberExtractor.get_certain_phone_numbers(text)
-
-        self.assertEqual(result_list[0], "tel:+99 123 4565")
-        self.assertEqual(result_list[1], "tel: +99 123 4565")
-        self.assertEqual(result_list[2], "tel:99 123 4565")
-        self.assertEqual(result_list[3], "tel: 99 123 4565")
-        self.assertEqual(result_list[4], "tel: 99 123 4565")
-        self.assertEqual(result_list[5], "tel: +99 123 4565")
-
-    def test_false_tel_tag(self):
-        text = " \"tel:a+99 123 4565  \n  \"tel:!+99 123 4565  tel:!+99 123 4565   \n "
-        result_list = self.numberExtractor.get_certain_phone_numbers(text)
-
-        self.assertEqual(len(result_list), 0)
-
     def test_phone_substring(self):
-        text = "phone: \" +99 123 4565 \"    phone:\"+99 123 4565\"  phones:\"+99 123 4565\" mobile_phone: \"+99 123 4565\"   "
-        result_list = self.numberExtractor.get_certain_phone_numbers(text)
+        candidate_list = [("phone  ", "+99 123 4565 ", ""), ("phone number ", "+99 123 4565", ""), ("Phone:", "99 123 4565", ""), ("PHONE numer", "99 123 4565", ""), ("PhonE", "99 123 4565", "")]
+        filtered_list = self.numberExtractor.get_certain_phone_numbers(candidate_list)
 
-        self.assertEqual(result_list[0], "phone: \" +99 123 4565 \"")
-        self.assertEqual(result_list[1].strip(), "phone:\"+99 123 4565\"")
-        self.assertEqual(result_list[2].strip(), "phones:\"+99 123 4565\"")
-        self.assertEqual(result_list[3].strip(), "mobile_phone: \"+99 123 4565\"")
+        self.assertEqual(len(filtered_list), len(candidate_list))
+        self.assertTrue(candidate_list[0][1] in filtered_list)
+        self.assertTrue(candidate_list[1][1] in filtered_list)
+        self.assertTrue(candidate_list[2][1] in filtered_list)
+        self.assertTrue(candidate_list[3][1] in filtered_list)
+        self.assertTrue(candidate_list[4][1] in filtered_list)
 
     def test_number_substring(self):
-        text = "number: \" +99 123 4565 \"    number:\"+99 123 4565\"  numbers:\"+99 123 4565\" phone_number:\"+99 123 4565\"   "
-        result_list = self.numberExtractor.get_certain_phone_numbers(text)
+        candidate_list = [("number  ", "+99 123 4565 ", ""), ("phone number ", "+99 123 4565", ""),
+                          ("NUMBER and some trash", "99 123 4565", ""), ("NUmbeR", "99 123 4565","")]
+        filtered_list = self.numberExtractor.get_certain_phone_numbers(candidate_list)
 
-        self.assertEqual(result_list[0], "number: \" +99 123 4565 \"")
-        self.assertEqual(result_list[1].strip(), "number:\"+99 123 4565\"")
-        self.assertEqual(result_list[2].strip(), "numbers:\"+99 123 4565\"")
-        self.assertEqual(result_list[3].strip(), "phone_number:\"+99 123 4565\"")
+        self.assertEqual(len(filtered_list), len(candidate_list))
+        self.assertTrue(candidate_list[0][1] in filtered_list)
+        self.assertTrue(candidate_list[1][1] in filtered_list)
+        self.assertTrue(candidate_list[2][1] in filtered_list)
+        self.assertTrue(candidate_list[3][1] in filtered_list)
 
     def test_wrong_substrings(self):
         text = "id: \" 99 123 4565 \"    a:\"99 123 4565\"  something:\"99 123 4565\"   "
-        result_list = self.numberExtractor.get_certain_phone_numbers(text)
+        candidate_list = [("id  ", "+99 123 4565 ", ""), ("somethinfs ", "+99 123 4565", ""),
+                          ("ser ", "99 123 4565", ""), ("px", "99 123 4565", "")]
+        result_list = self.numberExtractor.get_certain_phone_numbers(candidate_list)
 
         self.assertEqual(len(result_list), 0)
 

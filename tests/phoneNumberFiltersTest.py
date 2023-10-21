@@ -3,11 +3,12 @@ from src.extractors.phone.phoneNumberExtractor import PhoneNumberExtractor, filt
     filter_on_number_contains_maximum_one_parenthesis_pair, filter_on_minus_only_between_two_numbers, \
     filter_on_slashes_only_between_two_numbers, create_filter_on_minimum_number_of_digits, filter_on_candidate_shouldnt_contain_only_numbers
 from random import shuffle
+from src.extractors.beautifulSoupWrapper import BeautifulSoupHtmlWrapper
 
 
 class Basefilter_on_number_prefix_and_sufix_test(unittest.TestCase):
     def setUp(self):
-        self.numberExtractor = PhoneNumberExtractor()
+        self.numberExtractor = PhoneNumberExtractor(BeautifulSoupHtmlWrapper(""))
 
     def test_numbers_at_beggining_and_end_of_line(self):
         candidate_list = [("", "+385123456", " "), ("", "+385123456", "  "), (" ", "+385123456", ""),

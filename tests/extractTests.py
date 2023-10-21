@@ -1,7 +1,6 @@
 import unittest
 
-#TODO makni iz src foldera import
-from src.extract import format_logo_path, format_phone_numbers
+from src.utils import format_logo_path, format_phone_numbers
 
 
 class Format_phone_number_and_logo_path_tests(unittest.TestCase):
