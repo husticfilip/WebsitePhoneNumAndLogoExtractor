@@ -29,10 +29,29 @@ def readFromTheFile(name):
 
 
 def format_phone_numbers(phone_numbers: list[str]):
+    if len(phone_numbers) == 0:
+        return None
     phone_numbers_set = set()
     for number in phone_numbers:
-        phone_numbers_set.add(re.sub("[^\d+\(\)]"," ", number.strip()))
+        phone_numbers_set.add(re.sub("[^\d+\(\)]", " ", number.strip()))
     return phone_numbers_set
+
+
+def format_logo_path(logo_path: str, url: str):
+    if logo_path == "":
+        return logo_path
+    if logo_path.startswith("http"):
+        return logo_path
+    else:
+        url = re.sub(r'\\', '/', url)
+        logo_path = re.sub(r'\\', '/', logo_path)
+
+        if url.endswith("/") and logo_path.startswith("/"):
+            return url + logo_path[1:]
+        elif not url.endswith("/") and not logo_path.startswith("/"):
+            return url + "/" + logo_path
+        else:
+            return url + logo_path
 
 
 def configure_logs(LOG_LEVEL):
@@ -40,6 +59,7 @@ def configure_logs(LOG_LEVEL):
                         format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s: %(message)s',
                         datefmt='%m/%d/%Y %H:%M:%S',
                         stream=sys.stderr)
+
 
 def init_phone_number_extractor(beautiful_soup_wrapper):
     numberExtractor = PhoneNumberExtractor(beautiful_soup_wrapper)
@@ -52,22 +72,39 @@ def init_phone_number_extractor(beautiful_soup_wrapper):
     return numberExtractor
 
 
+def print_out_result(phone_numbers, logo_path):
+    formated_numbers = format_phone_numbers(phone_numbers)
+    formated_logo_path = format_logo_path(logo_path, url)
+
+    if formated_numbers is None:
+        print("None")
+    else:
+        result_string = ""
+        for number in formated_numbers:
+            result_string += number + ", "
+        result_string = result_string[0:-2]
+        print(result_string )
+
+    if formated_logo_path == "":
+        print("None")
+    else:
+        print(formated_logo_path)
+
 if __name__ == '__main__':
+    url = "phosagro"
     LOG_LEVEL = logging.INFO
     configure_logs(LOG_LEVEL)
 
     # html = get_html("https://www.cmsenergy.com/contact-us/default.aspx")
-    html = readFromTheFile("phosagro.txt")
-    html = "aaaaa"
+    #html = readFromTheFile("phosagro.txt")
+    html = " "
     beautiful_soup_wrapper = BeautifulSoupHtmlWrapper(html)
 
     numberExtractor = init_phone_number_extractor(beautiful_soup_wrapper)
-    logoExtractor = LogoExtractor(beautiful_soup_wrapper)
-
     numbers = numberExtractor.extractNumbers()
-    print(numbers)
-    numbers = format_phone_numbers(numbers)
-    print(numbers)
 
-    logo = logoExtractor.extract()
-    print(logo)
+    logoExtractor = LogoExtractor(beautiful_soup_wrapper)
+    logo_path = logoExtractor.extract()
+
+    print_out_result(numbers, logo_path)
+
