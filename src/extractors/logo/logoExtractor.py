@@ -3,9 +3,16 @@ import logging
 
 
 class LogoExtractor():
-    # TODO - explain how it works
     """
-    Class extracts phone numbers
+    Class extracts phone numbers.
+    Through constructor it is passed with BeautifulSoupHtmlWrapper which holds instance of BeautifulSoup which had
+    parsed html of the website with its html.parser. Class uses this BeautifulSoupHtmlWrapper to get all the
+    image tags from the document. Image tags are then wraped inside ImageElementStringWrapper which extracts
+    contents of image <src> and <img> tags as well as content of image's parent <div> tag.
+
+    This tags contents are then searched for the mention of log in them. First all <src> tags are searched and
+    if logo mention is found in its content is retunred, then all <img> tags are searched for logo mention nad
+    lastly all <div> tags. This process is done in do_the_search_for_a_word method.
     """
 
     """
@@ -18,7 +25,6 @@ class LogoExtractor():
             raise ValueError("Argument is not instance of BeautifulSoupHtmlWrapper")
         self.soup_wrapper = soup_wrapper
 
-    # TODO - stavi exception handler
     def extract(self):
         """
         Entry point to logo extract
