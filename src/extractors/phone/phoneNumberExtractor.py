@@ -176,12 +176,18 @@ class FilterEnum(Enum):
 
 
 class PhoneNumberExtractor():
-    # TODO - za kraj komentiraj kako radi extractor
     """
     Class represents phone number extractor. It gets initialized with BeautifulSoupHtmlWrapper
     which contains html document parsed by BeautifulSoup.
     From BeautifulSoupHtmlWrapper it gets parsed text that doesn't contain any html tags.
-    Then it uses NUMBER_MATCHING_REGEX to find all possible
+    Then it uses NUMBER_MATCHING_REGEX to find all possible numbers, its pefixes and sufixes.
+
+    Then from the list of numbers it first extracts all certain phone numbers by examening numer prefixes.
+    If prefix contains some of the key words like "Phone", "Tel" or "Fax" number is accepted as the phone number.
+
+    All other numbers go through the list of filters which filter out certain non phone numbers. The numbers that
+    pass all the filters are accepted as the phone numbers as well.
+
     """
 
     """
