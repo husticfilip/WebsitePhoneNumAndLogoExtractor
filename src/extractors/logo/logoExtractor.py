@@ -63,21 +63,21 @@ class LogoExtractor():
         """
         best_found = None
         for candidate in images_wrappers:
-            if key_word in candidate.child:
+            if key_word in candidate.child.lower():
                 if candidate.is_footer and best_found is None:
                     best_found = candidate
                 else:
                     return candidate
 
         for candidate in images_wrappers:
-            if key_word in candidate.current:
+            if key_word in candidate.current.lower():
                 if candidate.is_footer and best_found is None:
                     best_found = candidate
                 else:
                     return candidate
 
         for candidate in images_wrappers:
-            if key_word in candidate.parent:
+            if key_word in candidate.parent.lower():
                 if candidate.is_footer and best_found is None:
                     best_found = candidate
                 else:
