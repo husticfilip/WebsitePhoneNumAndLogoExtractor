@@ -61,6 +61,7 @@ class LogoExtractor():
         :param key_word: key word which indicates element is the logo
         :return: path to logo or None if logo is not found
         """
+        key_word = key_word.lower()
         best_found = None
         for candidate in images_wrappers:
             if key_word in candidate.child.lower():
