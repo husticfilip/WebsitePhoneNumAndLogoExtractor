@@ -45,7 +45,6 @@ def open_html(url: str):
         new_headers = add_host_to_headers(url)
         response = requests.get(url, headers=new_headers)
 
-    print(response.headers)
     return response.text, response.status_code
 
 
