@@ -200,8 +200,7 @@ class PhoneNumberExtractor():
     Regex used to match possible phone numbers. Regex extracts possible number, its prefix which length is specified
     by PREFIX_LENGTH and its sufix which length is between 0 and 2.
     """
-    NUMBER_MATCHING_REGEX = fr'([^+(\d]{PREFIX_LENGTH}(\+\+)?)([+(\d]([\d\(\)\-\s\\/](?!\s\s)){NUMBER_LENGTH}\d)(?=[\
-    ^\d]|$)(.?.?)'
+    NUMBER_MATCHING_REGEX = fr'([^+(\d]{PREFIX_LENGTH}(\+\+)?)([+(\d]([\d\(\)\-\s\\/](?!\s\s)){NUMBER_LENGTH}\d)(?=[^\d]|$)(.?.?)'
 
     """
     Key words that could appear in phone number prefix
