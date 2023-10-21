@@ -1,16 +1,10 @@
-from src.extractors.phone.phoneNumberExtractor import PhoneNumberExtractor, FilterEnum
-from pathlib import Path
-from src.extractors.logo.logoExtractor import LogoExtractor
 import logging
 import sys
+
 from src.extractors.beautifulSoupWrapper import BeautifulSoupHtmlWrapper
+from src.extractors.logo.logoExtractor import LogoExtractor
+from src.extractors.phone.phoneNumberExtractor import PhoneNumberExtractor, FilterEnum
 from utils import print_out_result, open_html
-import traceback
-
-
-# TODO - makni
-def readFromTheFile(name):
-    return Path("resources/" + name).read_text()
 
 
 def configure_logs(LOG_LEVEL):
@@ -21,6 +15,12 @@ def configure_logs(LOG_LEVEL):
 
 
 def get_user_url_input():
+    """
+    Function reads user ulr as first argument of the program. If there is no url
+    or if there are to many parameters program halts.
+
+    :return: user url input
+    """
     if len(sys.argv) == 1:
         print("Please provide url to the website as program argument.")
         exit()
@@ -31,7 +31,13 @@ def get_user_url_input():
         return sys.argv[1]
 
 
-def get_html():
+def get_html(url: str) -> str:
+    """
+    Function gets website html associated with provided url. If there was problem
+    reaching website program halts.
+
+    :return: read html in string format
+    """
     logging.info("Opening url " + url)
     try:
         html, status_code = open_html(url)
@@ -46,7 +52,14 @@ def get_html():
         exit()
 
 
-def init_phone_number_extractor(beautiful_soup_wrapper):
+def init_phone_number_extractor(beautiful_soup_wrapper:BeautifulSoupHtmlWrapper) -> PhoneNumberExtractor:
+    """
+    Function initiates PhoneNumberExtractor and registers all the filters that
+    will be used to filter phone numbers from other possible numbers found on website.
+
+    :param beautiful_soup_wrapper: BeautifulSoup wrapper which html parsed by BeautifulSoup
+    :return: phone number extractor instance
+    """
     numberExtractor = PhoneNumberExtractor(beautiful_soup_wrapper)
     numberExtractor.add_filter(FilterEnum.MINIMUM_NUMBER_OF_DIGITS)
     numberExtractor.add_filter(FilterEnum.NUMBER_SHOULD_CONTAIN_ONLY_NUMBERS)
@@ -58,12 +71,15 @@ def init_phone_number_extractor(beautiful_soup_wrapper):
 
 
 if __name__ == '__main__':
+    """
+    Entry point to the application. It is expected that user provieds website url
+    as the first program argument.
+    """
     LOG_LEVEL = logging.INFO
     configure_logs(LOG_LEVEL)
 
     url = get_user_url_input()
-    html = get_html()
-    #html = readFromTheFile("cial.txt")
+    html = get_html(url)
 
     try:
         logging.info("Initializing BeautifulSoupHtmlWrapper and parsing html with BeautifulSoup html.parser")
