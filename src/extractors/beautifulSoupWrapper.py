@@ -44,7 +44,7 @@ class ImageElementStringWrapper():
     """
 
     def __init__(self, image: Tag):
-        if not isinstance(Tag, str):
+        if not isinstance(image, Tag):
             raise ValueError("Provided image is not of BeautifulSoup Tag type.")
 
         self.image = image
