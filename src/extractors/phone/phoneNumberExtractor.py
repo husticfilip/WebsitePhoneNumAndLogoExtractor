@@ -200,12 +200,13 @@ class PhoneNumberExtractor():
     Regex used to match possible phone numbers. Regex extracts possible number, its prefix which length is specified
     by PREFIX_LENGTH and its sufix which length is between 0 and 2.
     """
-    NUMBER_MATCHING_REGEX = fr'([^+(\d]{PREFIX_LENGTH}(\+\+)?)([+(\d]([\d\(\)\-\s\\/](?!\s\s)){NUMBER_LENGTH}\d)(?=[^\d]|$)(.?.?)'
+    NUMBER_MATCHING_REGEX = fr'([^+(\d]{PREFIX_LENGTH}(\+\+)?)([+(\d]([\d\(\)\-\s\\/](?!\s\s)){NUMBER_LENGTH}\d)(?=[\
+    ^\d]|$)(.?.?)'
 
     """
     Key words that could appear in phone number prefix
     """
-    PHONE_NUMBER_KEY_WORDS = ["PHONE", "TEL", "NUMBER", "FAX", "MOBILE"]
+    PHONE_NUMBER_KEY_WORDS = ["PHONE", "TEL", "NUMBER", "FAX", "MOBILE", "LAND LINE", "LANDLINE", "CONTACT"]
 
     """
     Specifies minimum number of digits a phone number needs to have
@@ -265,8 +266,9 @@ class PhoneNumberExtractor():
             logging.info("Applying filter: " + str(filter_apply))
             candidates_list = filter_apply(candidates_list)
 
-        logging.info("Returning phone numbers")
-        return certain + candidates_list
+        result_list = certain + candidates_list
+        logging.info("Returning phone numbers:" + str(result_list))
+        return result_list
 
     def extract_candidate_list(self, text: str) -> List[Tuple[str, str, str]]:
         """
@@ -304,13 +306,13 @@ class PhoneNumberExtractor():
 
     def basefilter_on_number_prefix_and_sufix(self, phone_number_candidates: List[Tuple[str, str, str]]) -> List[str]:
         """
-        Base filter applied on phone number candidates.
-        Filter checks prefix to see if there is some char immediately before the number in which case number is not a phone numner.
-        Filter checks sufix to see if there is nothing after the number, if it is at the end of the sentence ". ", or if it
-        is in the sentence sparated by come ", " in which cases number could be a phone number.
+        Base filter applied on phone number candidates. Filter checks prefix to see if there is some char immediately
+        before the number in which case number is not a phone numner. Filter checks sufix to see if there is nothing
+        after the number, if it is at the end of the sentence ". ", or if it is in the sentence sparated by come ",
+        " in which cases number could be a phone number.
 
-        :param phone_number_candidates: List of phone number candidates. Each candidate represented by tuple (number_prefix, number, number_sufix)
-        :return: list of candidates that passed the filter
+        :param phone_number_candidates: List of phone number candidates. Each candidate represented by tuple (
+        number_prefix, number, number_sufix) :return: list of candidates that passed the filter
         """
         passed_candidates = []
 
