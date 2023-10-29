@@ -6,6 +6,9 @@ from src.extractors.logo.logoExtractor import LogoExtractor
 from src.extractors.phone.phoneNumberExtractor import PhoneNumberExtractor, FilterEnum
 from utils import print_out_result, open_html
 
+ENABLE_LOGGING = False
+LOG_LEVEL = logging.INFO
+
 
 def configure_logs(LOG_LEVEL):
     logging.basicConfig(level=LOG_LEVEL,
@@ -42,7 +45,7 @@ def get_html(url: str) -> str:
     try:
         html, status_code = open_html(url)
         if status_code != 200:
-            print("Could not open website, got status code " + status_code + ".")
+            print("Could not open website, got status code " + str(status_code) + ".")
             exit()
         else:
             return html
@@ -52,7 +55,7 @@ def get_html(url: str) -> str:
         exit()
 
 
-def init_phone_number_extractor(beautiful_soup_wrapper:BeautifulSoupHtmlWrapper) -> PhoneNumberExtractor:
+def init_phone_number_extractor(beautiful_soup_wrapper: BeautifulSoupHtmlWrapper) -> PhoneNumberExtractor:
     """
     Function initiates PhoneNumberExtractor and registers all the filters that
     will be used to filter phone numbers from other possible numbers found on website.
@@ -75,8 +78,8 @@ if __name__ == '__main__':
     Entry point to the application. It is expected that user provieds website url
     as the first program argument.
     """
-    LOG_LEVEL = logging.INFO
-    configure_logs(LOG_LEVEL)
+    if ENABLE_LOGGING:
+        configure_logs(LOG_LEVEL)
 
     url = get_user_url_input()
     html = get_html(url)
