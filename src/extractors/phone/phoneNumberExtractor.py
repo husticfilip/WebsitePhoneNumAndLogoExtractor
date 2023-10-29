@@ -211,7 +211,7 @@ class PhoneNumberExtractor():
     """
     Key words that could appear in phone number prefix
     """
-    PHONE_NUMBER_KEY_WORDS = ["PHONE", "TEL", "NUMBER", "FAX", "MOBILE", "LAND LINE", "LANDLINE", "CONTACT"]
+    PHONE_NUMBER_KEY_WORDS = ["PHONE", "TEL", "NUMBER", "FAX", "MOBILE", "LAND LINE", "LANDLINE", "CONTACT", "CALL"]
 
     """
     Specifies minimum number of digits a phone number needs to have
